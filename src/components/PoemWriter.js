@@ -1,39 +1,53 @@
 import React from "react";
-import PropTypes from "prop-types";
-//read more about proptypes here: https://reactjs.org/docs/typechecking-with-proptypes.html
 
-class TwitterMessage extends React.Component {
+const isValidPoem = poem => {
+  const poemLines = poem.split("\n").map(line => line.trim());
+  const isRightAmountOfLines = poemLines.length === 3;
+  if (poem && isRightAmountOfLines) {
+    return (
+      poemLines[0].split(" ").length === 5 &&
+      poemLines[1].split(" ").length === 3 &&
+      poemLines[2].split(" ").length === 5
+    );
+  } else {
+    return false;
+  }
+};
+
+class PoemWriter extends React.Component {
   constructor() {
     super();
-
-    this.state = { message: "" };
+    this.state = {
+      content: "",
+      isValid: true,
+    };
   }
 
-  setMessage = event => {
-    this.setState({ message: event.target.value });
+  setPoemContent = event => {
+    const content = event.target.value;
+    this.setState({
+      content,
+      isValid: isValidPoem(content),
+    });
   };
 
   render() {
     return (
       <div>
-        <strong>Your message:</strong>
-        <input
-          type="text"
-          value={this.state.message}
-          onChange={this.setMessage}
+        <textarea
+          rows="3"
+          cols="60"
+          value={this.state.content}
+          onChange={this.setPoemContent}
         />
-        <span>{this.props.maxChars - this.state.message.length}</span>
+        {!this.state.isValid ? (
+          <div id="poem-validation-error" style={{ color: "red" }}>
+            This poem is not written in the right structure!
+          </div>
+        ) : null}
       </div>
     );
   }
 }
 
-TwitterMessage.propTypes = {
-  maxChars: PropTypes.number,
-};
-
-TwitterMessage.defaultProps = {
-  maxChars: 140,
-};
-
-export default TwitterMessage;
+export default PoemWriter;
